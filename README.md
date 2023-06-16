@@ -56,7 +56,7 @@ The Crowdfunding project is an ongoing initiative, and there are several avenues
 
 
 
-- Once foundry is successfully you can use this following command:
+- Once foundry is successfully installed you can use this following command:
 
 ```
 
