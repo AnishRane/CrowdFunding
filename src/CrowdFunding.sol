@@ -8,17 +8,19 @@ import {PriceConverter} from "./PriceConverter.sol";
 error NotOwner(address, string);
 
 contract CrowdFunding {
-    uint256 public totalFundsRecieved;
-    address public immutable owner;
+    uint256 public s_totalFundsRecieved;
+    address public immutable i_owner;
+    AggregatorV3Interface private s_pricefeed;
 
     // Constructor to set the contract owner
-    constructor() {
-        owner = msg.sender;
+    constructor(address _pricefeed) {
+        i_owner = msg.sender;
+        s_pricefeed=AggregatorV3Interface(_pricefeed);
     }
 
     // Modifier to restrict access to the contract owner
     modifier OnlyOwner() {
-        if (msg.sender != owner) revert NotOwner(msg.sender, "owner only");
+        if (msg.sender != i_owner) revert NotOwner(msg.sender, "owner only");
         _;
     }
 
@@ -43,18 +45,18 @@ contract CrowdFunding {
 
     // Function to receive funds from users
     function fund() public payable {
-        require(msg.value.getConversionRate() >= MIN_USD, "not enough ethers");
+        require(msg.value.getConversionRate(s_pricefeed) >= MIN_USD, "not enough ethers");
         if (fundersRegistration[msg.sender]) {
             // Update the existing funder's amount
             uint256 index = fundersMapping[msg.sender];
             funders[index].amount += msg.value;
-            totalFundsRecieved += msg.value;
+            s_totalFundsRecieved += msg.value;
         } else {
             // Add a new funder
             fundersRegistration[msg.sender] = true;
             funders.push(Funder({funder: msg.sender, amount: msg.value}));
             fundersMapping[msg.sender] = funders.length - 1;
-            totalFundsRecieved += msg.value;
+            s_totalFundsRecieved += msg.value;
         }
     }
 
@@ -63,7 +65,7 @@ contract CrowdFunding {
         (bool callSuccess, ) = payable(msg.sender).call{
             value: address(this).balance
         }("");
-        totalFundsRecieved = 0;
+        s_totalFundsRecieved = 0;
         require(callSuccess, "call failed");
     }
 
@@ -72,10 +74,14 @@ contract CrowdFunding {
         // This function allows either the owner of the smart contract or the person who is funding to
         // check their funding details.
         require(
-            msg.sender == owner || fundersRegistration[msg.sender],
+            msg.sender == i_owner || fundersRegistration[msg.sender],
             "invalid user"
         );
         uint256 index = fundersMapping[msg.sender];
         return funders[index];
+    }
+
+    function getPriceFeedVersion() public view returns(uint256){
+      return s_pricefeed.version();
     }
 }
