@@ -72,7 +72,7 @@ forge test -vvvv
 
   
 
-**Note for Reviewer:** To successfully run the project, ensure that you are connected to the Sepolia Ethereum testnet or a compatible Ethereum network.
+** 📌 Note for Reviewer:** To successfully run the project, ensure that you are connected to the Sepolia Ethereum testnet or a compatible Ethereum network.
 
   
 
