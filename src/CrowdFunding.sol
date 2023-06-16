@@ -12,7 +12,7 @@ contract CrowdFunding {
     address public immutable i_owner;
     AggregatorV3Interface private s_pricefeed;
 
-    // Constructor to set the contract owner
+    // Constructor to set the contract owner and your desired pricefeed aggregator contract address
     constructor(address _pricefeed) {
         i_owner = msg.sender;
         s_pricefeed=AggregatorV3Interface(_pricefeed);
