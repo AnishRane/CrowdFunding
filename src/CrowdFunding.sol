@@ -7,7 +7,7 @@ import {PriceConverter} from "./PriceConverter.sol";
 // Custom error for unauthorized access
 error NotOwner(address, string);
 
-contract CrowdFunding{
+contract CrowdFunding {
     uint256 public totalFundsRecieved;
     address public immutable owner;
 
